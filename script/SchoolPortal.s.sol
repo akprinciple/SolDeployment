@@ -1,125 +1,19 @@
-//SPDX-License-Identifier: MIT
-pragma solidity >=0.8.28;
-import {IERC20} from './IERC.sol';
-contract School {
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
 
-         // ERC-20 Token data
-    
-    uint256 schoolAccount;
-    address _schoolAddress;
-    address _owner;
-    address token_address;
+import {Script} from "forge-std/Script.sol";
+import {School} from "../src/SchoolPortal.sol";
 
-    enum Grade { level_100, level_200, level_300, level_400 }
-    struct student{
-        string studentName;
-        uint16 age;
-        Grade grade;
-        uint256 fee;
-        bool hasPaid;
-        uint date;
-    }
-    mapping(address=>student) public studentInfo;
+contract School is Script {
+    School public SchoolPortal;
 
-    function addStudent (string memory _studentName, uint16 _age, Grade _grade) public {
-        uint256 _fee = (uint256(_grade) + 1) *25;
-        require(_owner != msg.sender, "You are the owner. You cant registered as a student");
-        require(_age > 0, "Age must be greater than 0");
-        require(IERC20(token_address).balanceOf(msg.sender) > _fee, "Insufficient funds");
-        IERC20(token_address).transferFrom(msg.sender,_schoolAddress, _fee);
+    function setUp() public {}
 
-        studentInfo[msg.sender] = student({
-            studentName: _studentName,
-             age: _age, 
-             grade: _grade,
-             fee:  _fee,
-             hasPaid: true, 
-             date: block.timestamp
-             });
-             studentAddresses.push(msg.sender);
-    }
-//    Delete Student
-    function deleteStudent(address _id) public {
-        require(_owner == msg.sender, "You dont have access to this");
-        for (uint i; i < studentAddresses.length; i++) {
-            if (studentAddresses[i] == _id) {
-                studentAddresses[i] = studentAddresses[studentAddresses.length - 1];
-                studentAddresses.pop();
-        }
-    }
-    }
-    mapping(address=>uint) public balanceOf;
-    mapping(address=>mapping(address=>uint)) public allowance;
-   
-    constructor(address _token_address, address schoolAddress){
-        _owner = msg.sender; // Contract Owner
-       schoolAddress = msg.sender; // School Address
-        token_address = _token_address;
-    }
-    
-    struct staff{
-        address id;
-        string staffName;
-        bool isPaid;
-        uint date;
-    }
-    staff[] public staffs;
-    address[] public studentAddresses;
-    
-    event Transfer(address indexed from, address indexed to, uint value);
-    event Approval(address indexed owner, address indexed spender, uint value);
+    function run() public {
+        vm.startBroadcast();
 
-    function payStaffSalary(address _to, uint _value) external returns(bool success){
-        success = true;
+        SchoolPortal = new School();
 
-        require(msg.sender != address(0), "Address zero found");
-        // require(msg.sender == _owner, "You dont have access to this");
-        require(IERC20(token_address).balanceOf(msg.sender) > 0, "You cant send zero _value");
-        require(IERC20(token_address).balanceOf(msg.sender) > _value, "Insufficient Funds");
-
-        IERC20(token_address).transferFrom(msg.sender, _to, _value); // The msg.sender here must be the declared school address
-
-
-        // balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
-        // balanceOf[_to] = balanceOf[_to] + _value;
-        
-        emit Transfer(msg.sender, _to, _value);
-
-        return success;
-    }
-    
-    
-    function viewAllStudents() public view returns (student[] memory) {
-        student[] memory allStudents = new student[](studentAddresses.length);
-    for(uint i = 0; i < studentAddresses.length; i++) {
-        allStudents[i] = studentInfo[studentAddresses[i]];
-    }
-    
-    return allStudents;
-    }
-
-     
-    function createStaff(string memory _staffName) public {
-        require(_owner != msg.sender, "You are the owner. You cant register as a staff");
-        staff memory Staffs = staff({staffName: _staffName, id: msg.sender, isPaid: false, date: 0});
-        staffs.push(Staffs);
-    }
-         
-    function getAllStaffs() public view returns (staff[] memory) {
-        return staffs;
-    }
-    function SuspendStaff(address staff_id) public {
-        
-        require(_owner == msg.sender, "You dont have access to this");
-        for (uint i; i < studentAddresses.length; i++) {
-            if (staffs[i].id == staff_id) {
-                staffs[i] = staffs[staffs.length - 1];
-                staffs.pop();
-        }
-    }
-    }
-    function getBalance(address _of) public view returns (uint256){
-       return IERC20(token_address).balanceOf(_of);
+        vm.stopBroadcast();
     }
 }
-//  Contract Address: 0x51f0cd7F12d8e274DB2dCa71F18300Ee66436501

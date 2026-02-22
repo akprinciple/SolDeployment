@@ -38,7 +38,16 @@ contract School {
              });
              studentAddresses.push(msg.sender);
     }
-   
+//    Delete Student
+    function deleteStudent(address _id) public {
+        require(_owner == msg.sender, "You dont have access to this");
+        for (uint i; i < studentAddresses.length; i++) {
+            if (studentAddresses[i] == _id) {
+                studentAddresses[i] = studentAddresses[studentAddresses.length - 1];
+                studentAddresses.pop();
+        }
+    }
+    }
     mapping(address=>uint) public balanceOf;
     mapping(address=>mapping(address=>uint)) public allowance;
    
@@ -52,6 +61,7 @@ contract School {
         address id;
         string staffName;
         bool isPaid;
+        bool isSuspended;
         uint date;
     }
     staff[] public staffs;
@@ -88,17 +98,27 @@ contract School {
     
     return allStudents;
     }
-     function Bank() public view returns (uint256) {
-        return balanceOf[_owner];
-    }
+
+     
     function createStaff(string memory _staffName) public {
-        require(_owner != msg.sender, "You are the owner. You cant register as a staff");
-        staff memory Staffs = staff({staffName: _staffName, id: msg.sender, isPaid: false, date: 0});
+        // require(_owner != msg.sender, "You are the owner. You cant register as a staff");
+        staff memory Staffs = staff({staffName: _staffName, id: msg.sender, isSuspended: false, isPaid: false, date: 0});
         staffs.push(Staffs);
     }
          
     function getAllStaffs() public view returns (staff[] memory) {
         return staffs;
+    }
+    function SuspendStaff(address staff_id) public {
+        
+        // require(_owner == msg.sender, "You dont have access to this");
+        for (uint i; i < staffs.length; i++) {
+            if (staffs[i].id == staff_id) {
+                staffs[i].isSuspended = true;
+                // staffs[i] = staffs[staffs.length - 1];
+                // staffs.pop();
+        }
+    }
     }
     function getBalance(address _of) public view returns (uint256){
        return IERC20(token_address).balanceOf(_of);

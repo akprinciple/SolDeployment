@@ -23,7 +23,7 @@ contract School {
 
     function addStudent (string memory _studentName, uint16 _age, Grade _grade) public {
         uint256 _fee = (uint256(_grade) + 1) *25;
-        require(_owner != msg.sender, "You are the owner. You cant registered as a student");
+        require(_owner != msg.sender, "You are the owner. You can't register as a student");
         require(_age > 0, "Age must be greater than 0");
         require(IERC20(token_address).balanceOf(msg.sender) > _fee, "Insufficient funds");
         IERC20(token_address).transferFrom(msg.sender,_schoolAddress, _fee);
@@ -51,9 +51,9 @@ contract School {
     mapping(address=>uint) public balanceOf;
     mapping(address=>mapping(address=>uint)) public allowance;
    
-    constructor(address _token_address, address schoolAddress){
+    constructor(address _token_address){
         _owner = msg.sender; // Contract Owner
-       schoolAddress = msg.sender; // School Address
+        _schoolAddress = msg.sender; // School Address
         token_address = _token_address;
     }
     
